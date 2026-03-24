@@ -1,33 +1,34 @@
 "use client"
 
+import { useRef } from "react"
 import { ArrowUpRight } from "lucide-react"
-import ScrollStack, { ScrollStackItem } from "./scroll-stack"
+import { motion, useScroll, useTransform } from "framer-motion"
 
 const projects = [
   {
     title: "Neural Canvas",
-    description: "AI-powered design tool for generative art creation. Transform your ideas into stunning visual artwork with cutting-edge machine learning algorithms.",
+    description: "AI-powered design tool for generative art creation",
     tags: ["Next.js", "AI SDK", "Canvas API"],
     link: "#",
     image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&h=600&fit=crop"
   },
   {
     title: "DevFlow",
-    description: "Streamlined workflow automation for development teams. Automate repetitive tasks and boost your team's productivity with intelligent pipelines.",
+    description: "Streamlined workflow automation for development teams",
     tags: ["TypeScript", "Node.js", "PostgreSQL"],
     link: "#",
     image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&h=600&fit=crop"
   },
   {
     title: "Synthwave UI",
-    description: "Modern component library with retro aesthetics. Build beautiful interfaces with pre-designed components inspired by 80s design.",
+    description: "Modern component library with retro aesthetics",
     tags: ["React", "Tailwind CSS", "Framer Motion"],
     link: "#",
     image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&h=600&fit=crop"
   },
   {
     title: "CloudSync Pro",
-    description: "Enterprise-grade file synchronization solution. Keep your data secure and accessible across all devices with real-time sync.",
+    description: "Enterprise-grade file synchronization solution",
     tags: ["Go", "AWS S3", "WebSocket"],
     link: "#",
     image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&h=600&fit=crop"
@@ -38,9 +39,9 @@ function ProjectCard({ project, index }: { project: typeof projects[0]; index: n
   return (
     <a
       href={project.link}
-      className="group block bg-card rounded-3xl border border-border/50 overflow-hidden hover:border-primary/30 transition-all duration-500"
+      className="group block w-[320px] md:w-[400px] shrink-0 bg-card rounded-2xl border border-border/50 overflow-hidden hover:border-primary/30 transition-all duration-500"
     >
-      <div className="aspect-[16/9] overflow-hidden relative">
+      <div className="aspect-[4/3] overflow-hidden relative">
         <img
           src={project.image}
           alt={project.title}
@@ -54,23 +55,23 @@ function ProjectCard({ project, index }: { project: typeof projects[0]; index: n
         </div>
       </div>
       
-      <div className="p-6">
-        <div className="flex items-start justify-between gap-4 mb-3">
-          <h3 className="text-2xl font-semibold text-foreground group-hover:text-primary transition-colors">
+      <div className="p-5">
+        <div className="flex items-start justify-between gap-3 mb-2">
+          <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
             {project.title}
           </h3>
-          <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 shrink-0">
+          <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 shrink-0">
             <ArrowUpRight className="w-4 h-4" />
           </div>
         </div>
         
-        <p className="text-muted-foreground mb-4 leading-relaxed">{project.description}</p>
+        <p className="text-sm text-muted-foreground mb-3 leading-relaxed">{project.description}</p>
         
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-1.5">
           {project.tags.map((tag) => (
             <span 
               key={tag}
-              className="text-xs px-3 py-1.5 bg-muted text-muted-foreground rounded-full"
+              className="text-xs px-2 py-1 bg-muted text-muted-foreground rounded-full"
             >
               {tag}
             </span>
@@ -82,30 +83,30 @@ function ProjectCard({ project, index }: { project: typeof projects[0]; index: n
 }
 
 export function ProjectsSection() {
+  const containerRef = useRef<HTMLDivElement>(null)
+  
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"]
+  })
+
+  const x = useTransform(scrollYProgress, [0, 1], ["10%", "-60%"])
+
   return (
-    <section id="projects" className="py-24">
-      <div className="px-6 mb-8 max-w-4xl mx-auto">
+    <section id="projects" ref={containerRef} className="py-24 overflow-hidden">
+      <div className="px-6 mb-12 max-w-4xl mx-auto">
         <h2 className="text-sm font-medium text-primary tracking-widest uppercase">Projects</h2>
+        <p className="mt-2 text-2xl md:text-3xl font-semibold text-foreground">Featured Work</p>
       </div>
       
-      <ScrollStack
-        className="px-6"
-        itemDistance={80}
-        itemScale={0.02}
-        itemStackDistance={20}
-        stackPosition="15%"
-        scaleEndPosition="5%"
-        baseScale={0.9}
-        blurAmount={2}
+      <motion.div 
+        style={{ x }}
+        className="flex gap-6 pl-6"
       >
-        <div className="max-w-4xl mx-auto pt-8">
-          {projects.map((project, index) => (
-            <ScrollStackItem key={project.title}>
-              <ProjectCard project={project} index={index} />
-            </ScrollStackItem>
-          ))}
-        </div>
-      </ScrollStack>
+        {projects.map((project, index) => (
+          <ProjectCard key={project.title} project={project} index={index} />
+        ))}
+      </motion.div>
     </section>
   )
 }
