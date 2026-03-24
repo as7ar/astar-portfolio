@@ -1,8 +1,7 @@
 "use client"
 
-import { useRef } from "react"
+import { useRef, useEffect, useState } from "react"
 import { ArrowUpRight } from "lucide-react"
-import { motion, useScroll, useTransform } from "framer-motion"
 
 const projects = [
   {
@@ -83,31 +82,73 @@ function ProjectCard({ project, index }: { project: typeof projects[0]; index: n
 }
 
 export function ProjectsSection() {
-  const containerRef = useRef<HTMLElement>(null)
-  
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"]
-  })
+  const sectionRef = useRef<HTMLDivElement>(null)
+  const trackRef = useRef<HTMLDivElement>(null)
+  const [translateX, setTranslateX] = useState(0)
 
-  const x = useTransform(scrollYProgress, [0, 1], ["5%", "-60%"])
+  useEffect(() => {
+    const section = sectionRef.current
+    const track = trackRef.current
+    if (!section || !track) return
+
+    const updateTranslate = () => {
+      const rect = section.getBoundingClientRect()
+      const sectionTop = rect.top
+      const sectionHeight = section.offsetHeight
+      const viewportHeight = window.innerHeight
+      const scrollableDistance = sectionHeight - viewportHeight
+
+      // Calculate progress: 0 when section top hits viewport top, 1 when we've scrolled through the section
+      let progress = 0
+      
+      if (sectionTop <= 0) {
+        progress = Math.min(1, Math.abs(sectionTop) / scrollableDistance)
+      }
+
+      // Calculate max horizontal distance to travel
+      const trackWidth = track.scrollWidth
+      const containerWidth = window.innerWidth
+      const maxTranslate = Math.max(0, trackWidth - containerWidth + 48)
+
+      setTranslateX(-progress * maxTranslate)
+    }
+
+    window.addEventListener("scroll", updateTranslate, { passive: true })
+    window.addEventListener("resize", updateTranslate, { passive: true })
+    updateTranslate()
+
+    return () => {
+      window.removeEventListener("scroll", updateTranslate)
+      window.removeEventListener("resize", updateTranslate)
+    }
+  }, [])
 
   return (
-    <section id="projects" ref={containerRef} className="h-[200vh]" style={{ position: 'relative' }}>
-      <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden py-12">
-        <div className="px-6 mb-8">
+    <section 
+      id="projects" 
+      ref={sectionRef}
+      className="relative h-[250vh]"
+    >
+      <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden">
+        <div className="px-6 mb-6">
           <h2 className="text-sm font-medium text-primary tracking-widest uppercase">Projects</h2>
           <p className="mt-2 text-2xl md:text-3xl font-semibold text-foreground">Featured Work</p>
         </div>
         
-        <motion.div 
-          style={{ x }}
-          className="flex gap-6 px-6"
-        >
-          {projects.map((project, index) => (
-            <ProjectCard key={project.title} project={project} index={index} />
-          ))}
-        </motion.div>
+        <div className="overflow-hidden">
+          <div 
+            ref={trackRef}
+            className="flex gap-6 px-6"
+            style={{ 
+              transform: `translate3d(${translateX}px, 0, 0)`,
+              willChange: 'transform'
+            }}
+          >
+            {projects.map((project, index) => (
+              <ProjectCard key={project.title} project={project} index={index} />
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   )
