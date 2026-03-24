@@ -83,26 +83,26 @@ function ProjectCard({ project, index }: { project: typeof projects[0]; index: n
 }
 
 export function ProjectsSection() {
-  const containerRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLElement>(null)
   
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"]
   })
 
-  const x = useTransform(scrollYProgress, [0, 1], ["0%", "-75%"])
+  const x = useTransform(scrollYProgress, [0, 1], ["5%", "-60%"])
 
   return (
-    <section id="projects" ref={containerRef} className="relative h-[300vh]" style={{ position: 'relative' }}>
-      <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden">
-        <div className="px-6 mb-12 max-w-4xl mx-auto w-full">
+    <section id="projects" ref={containerRef} className="h-[200vh]" style={{ position: 'relative' }}>
+      <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden py-12">
+        <div className="px-6 mb-8">
           <h2 className="text-sm font-medium text-primary tracking-widest uppercase">Projects</h2>
           <p className="mt-2 text-2xl md:text-3xl font-semibold text-foreground">Featured Work</p>
         </div>
         
         <motion.div 
           style={{ x }}
-          className="flex gap-6 pl-6"
+          className="flex gap-6 px-6"
         >
           {projects.map((project, index) => (
             <ProjectCard key={project.title} project={project} index={index} />
