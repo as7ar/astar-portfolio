@@ -1,127 +1,140 @@
 "use client"
 
-import React, { useLayoutEffect, useRef, useCallback } from 'react'
-import type { ReactNode } from 'react'
-import Lenis from 'lenis'
+import { useEffect, useRef, useState } from "react"
+import { ExternalLink } from "lucide-react"
 
-export interface ScrollStackItemProps {
-  itemClassName?: string
-  children: ReactNode
-}
+const projects = [
+  {
+    title: "AI Dashboard",
+    description: "Real-time analytics platform with ML-powered insights and predictive modeling",
+    tech: ["Next.js", "Python", "TensorFlow"],
+    color: "bg-gradient-to-br from-violet-100 to-purple-50",
+  },
+  {
+    title: "E-Commerce Platform",
+    description: "Full-stack marketplace with payment integration and inventory management",
+    tech: ["React", "Node.js", "Stripe"],
+    color: "bg-gradient-to-br from-blue-100 to-indigo-50",
+  },
+  {
+    title: "Design System",
+    description: "Comprehensive component library with accessibility-first approach",
+    tech: ["TypeScript", "Storybook", "Figma"],
+    color: "bg-gradient-to-br from-pink-100 to-rose-50",
+  },
+  {
+    title: "Mobile App",
+    description: "Cross-platform fitness tracking application with social features",
+    tech: ["React Native", "Firebase", "Redux"],
+    color: "bg-gradient-to-br from-emerald-100 to-teal-50",
+  },
+]
 
-export const ScrollStackItem: React.FC<ScrollStackItemProps> = ({ children, itemClassName = '' }) => (
-  <div
-    className={`scroll-stack-card relative w-full h-80 my-8 p-12 rounded-[40px] shadow-[0_0_30px_rgba(0,0,0,0.1)] box-border origin-top will-change-transform ${itemClassName}`.trim()}
-    style={{
-      backfaceVisibility: 'hidden',
-      transformStyle: 'preserve-3d'
-    }}
-  >
-    {children}
-  </div>
-)
+export function ProjectsSection() {
+  const sectionRef = useRef<HTMLElement>(null)
+  const [translateX, setTranslateX] = useState(0)
 
-interface ScrollStackProps {
-  className?: string
-  children: ReactNode
-  itemDistance?: number
-  itemScale?: number
-  itemStackDistance?: number
-  baseScale?: number
-}
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!sectionRef.current) return
 
-const ScrollStack: React.FC<ScrollStackProps> = ({
-  children,
-  className = '',
-  itemDistance = 100,
-  itemScale = 0.03,
-  itemStackDistance = 30,
-  baseScale = 0.85
-}) => {
-  const scrollerRef = useRef<HTMLDivElement>(null)
-  const animationFrameRef = useRef<number | null>(null)
-  const lenisRef = useRef<Lenis | null>(null)
-  const cardsRef = useRef<HTMLElement[]>([])
+      const section = sectionRef.current
+      const rect = section.getBoundingClientRect()
+      const sectionHeight = section.offsetHeight
+      const viewportHeight = window.innerHeight
 
-  const getScrollTop = () => window.scrollY
-  const getViewportHeight = () => window.innerHeight
-
-  const getOffset = (el: HTMLElement) => {
-    const rect = el.getBoundingClientRect()
-    return rect.top + window.scrollY
-  }
-
-  const update = useCallback(() => {
-    if (!cardsRef.current.length) return
-
-    const scrollTop = getScrollTop()
-    const vh = getViewportHeight()
-
-    cardsRef.current.forEach((card, i) => {
-      const top = getOffset(card)
-      const trigger = top - vh * 0.2 - itemStackDistance * i
-
-      let progress = 0
-      if (scrollTop > trigger) {
-        progress = Math.min(1, (scrollTop - trigger) / vh)
+      // Calculate how far into the section we've scrolled
+      const scrollStart = rect.top
+      const scrollEnd = rect.bottom - viewportHeight
+      
+      // Only animate when section is in view and sticky
+      if (scrollStart <= 0 && scrollEnd >= 0) {
+        const totalScrollDistance = sectionHeight - viewportHeight
+        const currentScroll = -scrollStart
+        const progress = Math.min(Math.max(currentScroll / totalScrollDistance, 0), 1)
+        
+        // Calculate the translation (from 0 to negative value)
+        const maxTranslate = (projects.length - 1) * 420 // card width + gap
+        setTranslateX(-progress * maxTranslate)
       }
-
-      const scale = 1 - progress * (1 - (baseScale + i * itemScale))
-      const translateY = progress * itemStackDistance * i
-
-      card.style.transform = `translate3d(0, ${translateY}px, 0) scale(${scale})`
-    })
-  }, [itemScale, itemStackDistance, baseScale])
-
-  useLayoutEffect(() => {
-    const cards = Array.from(
-      document.querySelectorAll('.scroll-stack-card')
-    ) as HTMLElement[]
-
-    if (!cards.length) return
-
-    cardsRef.current = cards
-
-    cards.forEach((card, i) => {
-      if (i < cards.length - 1) {
-        card.style.marginBottom = `${itemDistance}px`
-      }
-    })
-
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothWheel: true
-    })
-
-    lenis.on('scroll', update)
-
-    const raf = (time: number) => {
-      lenis.raf(time)
-      animationFrameRef.current = requestAnimationFrame(raf)
     }
 
-    animationFrameRef.current = requestAnimationFrame(raf)
-    lenisRef.current = lenis
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    handleScroll()
 
-    update()
-
-    return () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current)
-      }
-      lenis.destroy()
-      cardsRef.current = []
-    }
-  }, [update, itemDistance])
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
 
   return (
-    <div ref={scrollerRef} className={`w-full ${className}`}>
-      <div className="pt-[20vh] px-20 pb-[50rem] min-h-screen">
-        {children}
+    <section 
+      id="projects" 
+      ref={sectionRef}
+      className="h-[250vh]"
+    >
+      <div className="sticky top-0 h-screen overflow-hidden flex flex-col justify-center">
+        <div className="px-8 md:px-16 mb-6">
+          <span className="text-sm font-medium text-primary tracking-wider uppercase">
+            Featured Work
+          </span>
+          <h2 className="text-3xl md:text-4xl font-semibold text-foreground mt-2">
+            Projects
+          </h2>
+        </div>
+
+        <div className="relative w-full overflow-visible">
+          <div 
+            className="flex gap-6 pl-8 md:pl-16 transition-transform duration-100 ease-out"
+            style={{ transform: `translateX(${translateX}px)` }}
+          >
+            {projects.map((project, index) => (
+              <div
+                key={index}
+                className={`flex-shrink-0 w-[380px] h-[280px] rounded-2xl p-6 ${project.color} border border-border/50 shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer group`}
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <h3 className="text-xl font-semibold text-foreground">
+                    {project.title}
+                  </h3>
+                  <ExternalLink className="w-5 h-5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
+                
+                <p className="text-muted-foreground text-sm leading-relaxed mb-6">
+                  {project.description}
+                </p>
+
+                <div className="flex flex-wrap gap-2 mt-auto">
+                  {project.tech.map((item, i) => (
+                    <span
+                      key={i}
+                      className="px-3 py-1 text-xs font-medium bg-background/80 text-foreground rounded-full"
+                    >
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="px-8 md:px-16 mt-6">
+          <div className="flex gap-1">
+            {projects.map((_, index) => (
+              <div
+                key={index}
+                className="h-1 w-8 rounded-full bg-border overflow-hidden"
+              >
+                <div 
+                  className="h-full bg-primary transition-all duration-300"
+                  style={{
+                    width: `${Math.min(100, Math.max(0, (-translateX - index * 420 + 200) / 4.2))}%`
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
-    </div>
+    </section>
   )
 }
-
-export default ScrollStack
