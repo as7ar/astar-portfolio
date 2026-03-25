@@ -10,7 +10,7 @@ const socialLinks = [
 ]
 
 const skills = [
-  "React", "TypeScript", "Next.js", "Node.js", "Python", "AWS"
+  "React", "TypeScript", "Next.js", "Node.js", "Python", "Java", "Kotlin", "Go"
 ]
 
 export function ProfileSection() {
@@ -18,11 +18,11 @@ export function ProfileSection() {
     <section id="profile" className="min-h-screen flex items-center justify-center py-24 px-6">
       <div className="max-w-4xl w-full">
         <h2 className="text-sm font-medium text-primary tracking-widest uppercase mb-8">Profile</h2>
-        
+
         <div className="grid md:grid-cols-2 gap-12">
           {/* About */}
           <div className="space-y-6">
-            <h3 className="text-3xl md:text-4xl font-bold text-foreground leading-tight text-balance">
+            {/* <h3 className="text-3xl md:text-4xl font-bold text-foreground leading-tight text-balance">
               Building digital experiences with precision and passion.
             </h3>
             
@@ -36,9 +36,9 @@ export function ProfileSection() {
             <p className="text-muted-foreground leading-relaxed">
               Currently exploring the intersection of AI and web development,
               creating tools that enhance developer productivity and user experiences.
-            </p>
+            </p> */}
           </div>
-          
+
           {/* Skills & Social */}
           <div className="space-y-8">
             {/* Skills */}
@@ -46,7 +46,7 @@ export function ProfileSection() {
               <h4 className="text-sm font-medium text-muted-foreground mb-4 tracking-wide">Technologies</h4>
               <div className="flex flex-wrap gap-2">
                 {skills.map((skill) => (
-                  <span 
+                  <span
                     key={skill}
                     className="px-3 py-1.5 bg-muted text-muted-foreground text-sm rounded-full border border-border/50 hover:border-primary/30 hover:text-foreground transition-colors"
                   >
@@ -55,7 +55,7 @@ export function ProfileSection() {
                 ))}
               </div>
             </div>
-            
+
             {/* Social Links */}
             <div>
               <h4 className="text-sm font-medium text-muted-foreground mb-4 tracking-wide">Connect</h4>

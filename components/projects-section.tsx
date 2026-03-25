@@ -32,83 +32,103 @@ const projects = [
 
 export function ProjectsSection() {
   const sectionRef = useRef<HTMLElement>(null)
-  const [translateX, setTranslateX] = useState(0)
+  const trackRef = useRef<HTMLDivElement>(null)
+
+  const [progress, setProgress] = useState(0)
 
   useEffect(() => {
+    let rafId: number
+
     const handleScroll = () => {
       if (!sectionRef.current) return
 
-      const section = sectionRef.current
-      const rect = section.getBoundingClientRect()
-      const sectionHeight = section.offsetHeight
-      const viewportHeight = window.innerHeight
+      const rect = sectionRef.current.getBoundingClientRect()
+      const vh = window.innerHeight
 
-      // Calculate how far into the section we've scrolled
-      const scrollStart = rect.top
-      const scrollEnd = rect.bottom - viewportHeight
-      
-      // Only animate when section is in view and sticky
-      if (scrollStart <= 0 && scrollEnd >= 0) {
-        const totalScrollDistance = sectionHeight - viewportHeight
-        const currentScroll = -scrollStart
-        const progress = Math.min(Math.max(currentScroll / totalScrollDistance, 0), 1)
-        
-        // Calculate the translation (from 0 to negative value)
-        const maxTranslate = (projects.length - 1) * 420 // card width + gap
-        setTranslateX(-progress * maxTranslate)
+      if (rect.top <= 0 && rect.bottom >= vh) {
+        const total = sectionRef.current.offsetHeight - vh
+        const current = -rect.top
+
+        const raw = current / total
+        const eased = 1 - Math.pow(1 - raw, 3) // easeOutCubic
+
+        setProgress(Math.min(Math.max(eased, 0), 1))
       }
     }
 
-    window.addEventListener("scroll", handleScroll, { passive: true })
-    handleScroll()
+    const loop = () => {
+      handleScroll()
+      rafId = requestAnimationFrame(loop)
+    }
 
-    return () => window.removeEventListener("scroll", handleScroll)
+    loop()
+
+    return () => cancelAnimationFrame(rafId)
   }, [])
 
+  const getTranslate = () => {
+    if (!trackRef.current) return 0
+
+    const trackWidth = trackRef.current.scrollWidth
+    const viewport = window.innerWidth
+
+    const max = trackWidth - viewport + 120
+    return -progress * max
+  }
+
+  const getActiveIndex = () => {
+    return Math.round(progress * (projects.length - 1))
+  }
+
   return (
-    <section 
-      id="projects" 
-      ref={sectionRef}
-      className="h-[250vh]"
-    >
-      <div className="sticky top-0 h-screen overflow-hidden flex flex-col justify-center">
-        <div className="px-8 md:px-16 mb-6">
-          <span className="text-sm font-medium text-primary tracking-wider uppercase">
+    <section ref={sectionRef} className="h-[240vh]">
+      <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden">
+
+        {/* Header */}
+        <div className="px-8 md:px-16 mb-8">
+          <span className="text-xs tracking-widest text-primary uppercase">
             Featured Work
           </span>
-          <h2 className="text-3xl md:text-4xl font-semibold text-foreground mt-2">
+          <h2 className="text-3xl md:text-4xl font-semibold mt-2">
             Projects
           </h2>
         </div>
 
-        <div className="relative w-full overflow-visible">
-          <div 
-            className="flex gap-6 pl-8 md:pl-16 transition-transform duration-100 ease-out"
-            style={{ transform: `translateX(${translateX}px)` }}
+        {/* Track */}
+        <div className="overflow-hidden">
+          <div
+            ref={trackRef}
+            className="flex gap-8 px-8 md:px-16 will-change-transform"
+            style={{
+              transform: `translate3d(${getTranslate()}px,0,0)`
+            }}
           >
             {projects.map((project, index) => (
               <div
                 key={index}
-                className={`flex-shrink-0 w-[380px] h-[280px] rounded-2xl p-6 ${project.color} border border-border/50 shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer group`}
+                className={`w-[360px] shrink-0 rounded-2xl p-6 ${project.color}
+                border border-black/5 backdrop-blur-sm
+                hover:shadow-lg hover:-translate-y-1
+                transition-all duration-500 ease-out group`}
               >
-                <div className="flex items-start justify-between mb-4">
-                  <h3 className="text-xl font-semibold text-foreground">
+                <div className="flex justify-between items-start mb-4">
+                  <h3 className="text-lg font-semibold">
                     {project.title}
                   </h3>
-                  <ExternalLink className="w-5 h-5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition" />
                 </div>
-                
-                <p className="text-muted-foreground text-sm leading-relaxed mb-6">
+
+                <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
                   {project.description}
                 </p>
 
-                <div className="flex flex-wrap gap-2 mt-auto">
-                  {project.tech.map((item, i) => (
+                <div className="flex flex-wrap gap-2">
+                  {project.tech.map((t) => (
                     <span
-                      key={i}
-                      className="px-3 py-1 text-xs font-medium bg-background/80 text-foreground rounded-full"
+                      key={t}
+                      className="text-xs px-3 py-1 rounded-full bg-white/70 backdrop-blur border border-black/5"
                     >
-                      {item}
+                      {t}
                     </span>
                   ))}
                 </div>
@@ -117,20 +137,17 @@ export function ProjectsSection() {
           </div>
         </div>
 
-        <div className="px-8 md:px-16 mt-6">
-          <div className="flex gap-1">
-            {projects.map((_, index) => (
+        {/* Indicator */}
+        <div className="px-8 md:px-16 mt-8">
+          <div className="flex gap-2">
+            {projects.map((_, i) => (
               <div
-                key={index}
-                className="h-1 w-8 rounded-full bg-border overflow-hidden"
-              >
-                <div 
-                  className="h-full bg-primary transition-all duration-300"
-                  style={{
-                    width: `${Math.min(100, Math.max(0, (-translateX - index * 420 + 200) / 4.2))}%`
-                  }}
-                />
-              </div>
+                key={i}
+                className={`h-1.5 w-6 rounded-full transition-all duration-300 ${getActiveIndex() === i
+                    ? "bg-primary w-10"
+                    : "bg-black/10"
+                  }`}
+              />
             ))}
           </div>
         </div>
