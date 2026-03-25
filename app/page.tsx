@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { HeroSection } from "@/components/hero-section"
 import { ProfileSection } from "@/components/profile-section"
 import { ProjectsSection } from "@/components/projects-section"
-import { ContentSection } from "@/components/content-section"
+import { ContactSection } from "@/components/contact-section"
 import { BottomNav } from "@/components/bottom-nav"
 
 export default function Home() {
@@ -29,7 +29,7 @@ export default function Home() {
 
     window.addEventListener("scroll", handleScroll)
     handleScroll()
-    
+
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
@@ -45,7 +45,7 @@ export default function Home() {
       <HeroSection />
       <ProfileSection />
       <ProjectsSection />
-      <ContentSection />
+      <ContactSection />
       <BottomNav activeSection={activeSection} onNavigate={handleNavigate} />
     </main>
   )
