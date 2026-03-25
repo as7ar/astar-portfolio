@@ -4,28 +4,28 @@ import { ExternalLink } from "lucide-react"
 
 const projects = [
   {
-    title: "AI Dashboard",
-    description: "Real-time analytics platform with ML-powered insights and predictive modeling",
-    tech: ["Next.js", "Python", "TensorFlow"],
-    link: "#"
+    title: "CIME4j",
+    description: "Cime unofficial java sdk with Kotlin",
+    tech: ["Gradle", "Kotlin"],
+    link: "https://github.com/as7ar/cime4j"
   },
   {
-    title: "E-Commerce Platform",
-    description: "Full-stack marketplace with payment integration and inventory management",
-    tech: ["React", "Node.js", "Stripe"],
-    link: "#"
+    title: "MCPMC",
+    description: "MCP Server for Minecraft",
+    tech: ["Kotlin", "MCP", "Papermc", "Minecraft"],
+    link: "https://github.com/as7ar/mcpmc"
   },
   {
-    title: "Design System",
-    description: "Comprehensive component library with accessibility-first approach",
-    tech: ["TypeScript", "Storybook", "Figma"],
-    link: "#"
+    title: "Golive",
+    description: "Websocket Live Streaming Server",
+    tech: ["Go", "Chzzk/Soop/Weflab/Cime"],
+    link: "https://github.com/as7ar/golive"
   },
   {
-    title: "Mobile App",
-    description: "Cross-platform fitness tracking application with social features",
-    tech: ["React Native", "Firebase", "Redux"],
-    link: "#"
+    title: "ZeroLive",
+    description: "Live Streaming Manage & Convenience Tools",
+    tech: ["Go", "Typescript", "React"],
+    link: "https://github.com/as7ar/zerolive"
   },
 ]
 
