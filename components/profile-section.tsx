@@ -3,10 +3,8 @@
 import { Github, Linkedin, Twitter, Mail } from "lucide-react"
 
 const socialLinks = [
-  { icon: Github, href: "#", label: "GitHub" },
-  { icon: Linkedin, href: "#", label: "LinkedIn" },
-  { icon: Twitter, href: "#", label: "Twitter" },
-  { icon: Mail, href: "#", label: "Email" },
+  { icon: Github, href: "https://github.com/as7ar", label: "GitHub" },
+  { icon: Mail, href: "mailto:apo2073@outlook.com", label: "Email" },
 ]
 
 const skills = [
