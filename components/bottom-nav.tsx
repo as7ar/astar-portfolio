@@ -10,7 +10,7 @@ interface BottomNavProps {
 const navItems = [
   { id: "profile", label: "PROFILE", icon: User },
   { id: "projects", label: "PROJECTS", icon: FolderKanban },
-  { id: "content", label: "CONTENT", icon: FileText },
+  { id: "contact", label: "CONTACT", icon: FileText },
 ]
 
 export function BottomNav({ activeSection, onNavigate }: BottomNavProps) {
