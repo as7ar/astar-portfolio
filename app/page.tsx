@@ -12,7 +12,7 @@ export default function Home() {
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ["profile", "projects", "content"]
+      const sections = ["profile", "projects", "contact"]
       const scrollPosition = window.scrollY + window.innerHeight / 2
 
       for (const sectionId of sections) {
