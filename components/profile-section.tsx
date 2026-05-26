@@ -8,7 +8,7 @@ const socialLinks = [
 ]
 
 const skills = [
-  "React", "TypeScript", "Next.js", "Node.js", "Python", "Java", "Kotlin", "Go"
+  "React", "TypeScript", "Next.js", "Node.js", "Python", "Java", "Kotlin", "Go", "Rust"
 ]
 
 export function ProfileSection() {
