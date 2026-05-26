@@ -22,10 +22,10 @@ const projects = [
     link: "https://github.com/as7ar/golive"
   },
   {
-    title: "ZeroLive",
-    description: "Live Streaming Manage & Convenience Tools",
-    tech: ["Go", "Typescript", "React"],
-    link: "https://github.com/as7ar/zerolive"
+    title: "MathRC",
+    description: "a Mathematics Library for Rust",
+    tech: ["Rust"],
+    link: "https://github.com/as7ar/mathrc"
   },
 ]
 
